@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Списание ОС">
+<meta name="theme-color" content="#1a1f2e">
+<title>Списание ОС</title>
+<link rel="manifest" href="manifest.json">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Russo+One&family=Roboto:wght@300;400;500;700&display=swap');
+
+  :root {
+    --bg: #0f1320;
+    --surface: #1a2035;
+    --surface2: #212840;
+    --accent: #4f8ef7;
+    --accent2: #f7a34f;
+    --danger: #f74f4f;
+    --success: #4ff7a3;
+    --text: #e8eaf0;
+    --text2: #8892a4;
+    --border: #2d3654;
+    --radius: 14px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    font-family: 'Roboto', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ===== HEADER ===== */
+  .header {
+    background: linear-gradient(135deg, #1a2035 0%, #141928 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.4);
+  }
+
+  .header-title {
+    font-family: 'Russo One', sans-serif;
+    font-size: 18px;
+    color: var(--accent);
+    letter-spacing: 0.5px;
+  }
+
+  .header-sub {
+    font-size: 11px;
+    color: var(--text2);
+    margin-top: 2px;
+  }
+
+  .btn-new {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 18px;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 4px 15px rgba(79,142,247,0.35);
+    transition: transform 0.1s, box-shadow 0.1s;
+  }
+
+  .btn-new:active { transform: scale(0.96); box-shadow: 0 2px 8px rgba(79,142,247,0.2); }
+
+  /* ===== HOME ===== */
+  #home { padding: 20px; }
+
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text2);
+  }
+
+  .empty-icon {
+    font-size: 64px;
+    margin-bottom: 16px;
+    opacity: 0.4;
+  }
+
+  .empty-state h2 { font-size: 18px; color: var(--text); margin-bottom: 8px; }
+  .empty-state p { font-size: 14px; line-height: 1.6; }
+
+  .report-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    transition: border-color 0.2s;
+  }
+
+  .report-card:active { border-color: var(--accent); }
+
+  .report-card-info { flex: 1; }
+  .report-card-inv { font-weight: 700; font-size: 15px; color: var(--text); }
+  .report-card-date { font-size: 12px; color: var(--text2); margin-top: 4px; }
+  .report-card-photos {
+    font-size: 12px;
+    color: var(--accent);
+    margin-top: 4px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .card-actions { display: flex; gap: 8px; }
+
+  .btn-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    transition: transform 0.1s;
+  }
+
+  .btn-icon:active { transform: scale(0.9); }
+
+  .btn-share { background: rgba(79,142,247,0.15); color: var(--accent); }
+  .btn-delete { background: rgba(247,79,79,0.15); color: var(--danger); }
+  .btn-open { background: rgba(79,247,163,0.15); color: var(--success); }
+
+  /* ===== FORM ===== */
+  #form-view { display: none; padding: 20px; }
+
+  .form-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .btn-back {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text);
+    font-size: 20px;
+    cursor: pointer;
+  }
+
+  .form-title {
+    font-family: 'Russo One', sans-serif;
+    font-size: 16px;
+    color: var(--text);
+  }
+
+  .field-group { margin-bottom: 20px; }
+
+  .field-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text2);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .field-label .req { color: var(--danger); }
+
+  .field-input {
+    width: 100%;
+    background: var(--surface2);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    font-size: 16px;
+    color: var(--text);
+    font-family: 'Roboto', sans-serif;
+    transition: border-color 0.2s;
+    outline: none;
+  }
+
+  .field-input:focus { border-color: var(--accent); }
+  .field-input::placeholder { color: var(--text2); }
+
+  /* ===== PHOTO SLOT ===== */
+  .photo-slot {
+    background: var(--surface2);
+    border: 2px dashed var(--border);
+    border-radius: var(--radius);
+    min-height: 200px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .photo-slot:active { border-color: var(--accent); background: rgba(79,142,247,0.05); }
+  .photo-slot.has-photo { border-style: solid; border-color: var(--success); }
+
+  .photo-slot img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    position: absolute;
+    top: 0; left: 0;
+    border-radius: calc(var(--radius) - 2px);
+  }
+
+  .photo-slot-icon { font-size: 40px; opacity: 0.4; }
+  .photo-slot-text { font-size: 13px; color: var(--text2); margin-top: 8px; text-align: center; padding: 0 20px; }
+  .photo-slot-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: var(--success);
+    color: #0f1320;
+    border-radius: 6px;
+    padding: 3px 8px;
+    font-size: 11px;
+    font-weight: 700;
+    z-index: 2;
+  }
+
+  /* Inventory frame guide */
+  .inv-frame-guide {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 75%;
+    height: 40%;
+    border: 3px solid rgba(79,247,163,0.6);
+    border-radius: 8px;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .inv-frame-guide::before {
+    content: '';
+    position: absolute;
+    top: -2px; left: -2px; right: -2px; bottom: -2px;
+    border-radius: 9px;
+    border: 1px solid rgba(79,247,163,0.2);
+    animation: pulse-frame 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse-frame {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(1.03); }
+  }
+
+  .inv-frame-corner {
+    position: absolute;
+    width: 16px; height: 16px;
+    border-color: var(--success);
+    border-style: solid;
+  }
+
+  .inv-frame-corner.tl { top: -3px; left: -3px; border-width: 3px 0 0 3px; border-radius: 4px 0 0 0; }
+  .inv-frame-corner.tr { top: -3px; right: -3px; border-width: 3px 3px 0 0; border-radius: 0 4px 0 0; }
+  .inv-frame-corner.bl { bottom: -3px; left: -3px; border-width: 0 0 3px 3px; border-radius: 0 0 0 4px; }
+  .inv-frame-corner.br { bottom: -3px; right: -3px; border-width: 0 3px 3px 0; border-radius: 0 0 4px 0; }
+
+  .photo-retake-btn {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    background: rgba(15,19,32,0.85);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    padding: 6px 12px;
+    font-size: 12px;
+    cursor: pointer;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  /* Quality warning */
+  .quality-warning {
+    background: rgba(247,163,79,0.15);
+    border: 1px solid var(--accent2);
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 13px;
+    color: var(--accent2);
+    margin-top: 8px;
+    display: none;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .quality-warning.show { display: flex; }
+
+  /* ===== SAVE BTN ===== */
+  .btn-save {
+    width: 100%;
+    background: linear-gradient(135deg, var(--accent), #3a7aee);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius);
+    padding: 16px;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 28px;
+    margin-bottom: 40px;
+    box-shadow: 0 6px 20px rgba(79,142,247,0.4);
+    transition: transform 0.1s, box-shadow 0.1s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .btn-save:active { transform: scale(0.98); box-shadow: 0 3px 10px rgba(79,142,247,0.2); }
+
+  /* ===== DETAIL VIEW ===== */
+  #detail-view { display: none; padding: 20px; }
+
+  .detail-inv {
+    font-family: 'Russo One', sans-serif;
+    font-size: 22px;
+    color: var(--accent);
+    margin-bottom: 6px;
+  }
+
+  .detail-date { font-size: 13px; color: var(--text2); margin-bottom: 24px; }
+
+  .detail-photos { display: flex; flex-direction: column; gap: 16px; }
+
+  .detail-photo-block { }
+  .detail-photo-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text2);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+
+  .detail-photo-img {
+    width: 100%;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    display: block;
+  }
+
+  .no-photo {
+    background: var(--surface2);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text2);
+    font-size: 13px;
+  }
+
+  .btn-share-big {
+    width: 100%;
+    background: linear-gradient(135deg, #25b561, #1d9650);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius);
+    padding: 16px;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 24px;
+    box-shadow: 0 6px 20px rgba(37,181,97,0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .btn-share-big:active { transform: scale(0.98); }
+
+  /* ===== TOAST ===== */
+  .toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: #2d3654;
+    color: var(--text);
+    border-radius: 10px;
+    padding: 12px 20px;
+    font-size: 14px;
+    z-index: 999;
+    transition: transform 0.3s ease;
+    white-space: nowrap;
+    border: 1px solid var(--border);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+  }
+
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* ===== MODAL ===== */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 200;
+    align-items: flex-end;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+  }
+
+  .modal-overlay.show { display: flex; }
+
+  .modal-sheet {
+    background: var(--surface);
+    border-radius: 20px 20px 0 0;
+    padding: 24px 20px 40px;
+    width: 100%;
+    border-top: 1px solid var(--border);
+  }
+
+  .modal-handle {
+    width: 40px;
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    margin: 0 auto 20px;
+  }
+
+  .modal-title {
+    font-family: 'Russo One', sans-serif;
+    font-size: 16px;
+    margin-bottom: 20px;
+    color: var(--text);
+    text-align: center;
+  }
+
+  .share-options { display: flex; flex-direction: column; gap: 10px; }
+
+  .share-option {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    cursor: pointer;
+    font-size: 15px;
+    color: var(--text);
+    transition: border-color 0.2s;
+  }
+
+  .share-option:active { border-color: var(--accent); }
+  .share-option-icon { font-size: 24px; width: 32px; text-align: center; }
+
+  input[type="file"] { display: none; }
+
+  .status-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--success);
+    display: inline-block;
+    margin-right: 4px;
+    animation: blink 2s ease-in-out infinite;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <div class="header-title">📋 Списание ОС</div>
+    <div class="header-sub"><span class="status-dot"></span>Фотоотчёты</div>
+  </div>
+  <button class="btn-new" onclick="showForm()">+ Создать</button>
+</div>
+
+<!-- HOME -->
+<div id="home">
+  <div class="empty-state" id="empty-state">
+    <div class="empty-icon">🗂️</div>
+    <h2>Нет отчётов</h2>
+    <p>Нажмите «Создать» чтобы<br>добавить первый фотоотчёт</p>
+  </div>
+  <div id="reports-list"></div>
+</div>
+
+<!-- FORM -->
+<div id="form-view">
+  <div class="form-header">
+    <button class="btn-back" onclick="showHome()">←</button>
+    <div class="form-title">Новый фотоотчёт</div>
+  </div>
+
+  <!-- Инвентарный номер -->
+  <div class="field-group">
+    <div class="field-label">📌 Инвентарный номер <span class="req">*</span></div>
+    <input class="field-input" id="inv-number" type="text" placeholder="Например: ОС-00123" autocomplete="off">
+  </div>
+
+  <!-- Фото инвентарного номера -->
+  <div class="field-group">
+    <div class="field-label">🔍 Фото инвентарного номера</div>
+    <div class="photo-slot" id="slot-inv" onclick="triggerPhoto('inv')">
+      <div class="inv-frame-guide" id="inv-guide">
+        <div class="inv-frame-corner tl"></div>
+        <div class="inv-frame-corner tr"></div>
+        <div class="inv-frame-corner bl"></div>
+        <div class="inv-frame-corner br"></div>
+      </div>
+      <div id="slot-inv-placeholder">
+        <div style="text-align:center">
+          <div class="photo-slot-icon">📷</div>
+          <div class="photo-slot-text">Наведите камеру так,<br>чтобы инвентарный номер<br>попал в рамку</div>
+        </div>
+      </div>
+    </div>
+    <div class="quality-warning" id="warn-inv">
+      ⚠️ Фото размытое или номер не виден. Пожалуйста, сделайте фото повторно.
+    </div>
+  </div>
+
+  <!-- Фото общего вида -->
+  <div class="field-group">
+    <div class="field-label">🏭 Фото общего вида ОС</div>
+    <div class="photo-slot" id="slot-os" onclick="triggerPhoto('os')">
+      <div id="slot-os-placeholder">
+        <div style="text-align:center">
+          <div class="photo-slot-icon">📸</div>
+          <div class="photo-slot-text">Сфотографируйте объект<br>целиком для идентификации</div>
+        </div>
+      </div>
+    </div>
+    <div class="quality-warning" id="warn-os">
+      ⚠️ Фото слишком тёмное или размытое. Рекомендуется переснять.
+    </div>
+  </div>
+
+  <input type="file" id="file-inv" accept="image/*" capture="environment" onchange="handlePhoto(event,'inv')">
+  <input type="file" id="file-os" accept="image/*" capture="environment" onchange="handlePhoto(event,'os')">
+
+  <button class="btn-save" onclick="saveReport()">
+    💾 Сохранить отчёт
+  </button>
+</div>
+
+<!-- DETAIL -->
+<div id="detail-view">
+  <div class="form-header">
+    <button class="btn-back" onclick="showHome()">←</button>
+    <div class="form-title">Просмотр отчёта</div>
+  </div>
+  <div class="detail-inv" id="detail-inv-num"></div>
+  <div class="detail-date" id="detail-date"></div>
+  <div class="detail-photos">
+    <div class="detail-photo-block">
+      <div class="detail-photo-label">Фото инвентарного номера</div>
+      <div id="detail-photo-inv-wrap"></div>
+    </div>
+    <div class="detail-photo-block">
+      <div class="detail-photo-label">Фото общего вида ОС</div>
+      <div id="detail-photo-os-wrap"></div>
+    </div>
+  </div>
+  <button class="btn-share-big" id="detail-share-btn">
+    📤 Поделиться отчётом
+  </button>
+</div>
+
+<!-- SHARE MODAL -->
+<div class="modal-overlay" id="share-modal" onclick="closeShareModal(event)">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Отправить отчёт</div>
+    <div class="share-options">
+      <div class="share-option" onclick="shareVia('whatsapp')">
+        <span class="share-option-icon">💬</span>
+        <span>WhatsApp</span>
+      </div>
+      <div class="share-option" onclick="shareVia('telegram')">
+        <span class="share-option-icon">✈️</span>
+        <span>Telegram</span>
+      </div>
+      <div class="share-option" onclick="shareVia('email')">
+        <span class="share-option-icon">📧</span>
+        <span>Эл. почта</span>
+      </div>
+      <div class="share-option" onclick="shareVia('native')">
+        <span class="share-option-icon">📤</span>
+        <span>Другое приложение</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let reports = JSON.parse(localStorage.getItem('os-reports') || '[]');
+let currentReport = null;
+let photoData = { inv: null, os: null };
+let currentShareId = null;
+
+// ===== NAVIGATION =====
+function showHome() {
+  document.getElementById('home').style.display = 'block';
+  document.getElementById('form-view').style.display = 'none';
+  document.getElementById('detail-view').style.display = 'none';
+  renderList();
+}
+
+function showForm() {
+  photoData = { inv: null, os: null };
+  document.getElementById('inv-number').value = '';
+  resetSlot('inv');
+  resetSlot('os');
+  document.getElementById('warn-inv').classList.remove('show');
+  document.getElementById('warn-os').classList.remove('show');
+  document.getElementById('home').style.display = 'none';
+  document.getElementById('form-view').style.display = 'block';
+  document.getElementById('detail-view').style.display = 'none';
+}
+
+function showDetail(id) {
+  const r = reports.find(x => x.id === id);
+  if (!r) return;
+  currentShareId = id;
+  document.getElementById('detail-inv-num').textContent = '№ ' + r.invNumber;
+  document.getElementById('detail-date').textContent = '📅 ' + r.date;
+
+  const invWrap = document.getElementById('detail-photo-inv-wrap');
+  const osWrap = document.getElementById('detail-photo-os-wrap');
+
+  invWrap.innerHTML = r.photoInv
+    ? `<img class="detail-photo-img" src="${r.photoInv}">`
+    : `<div class="no-photo">Фото не добавлено</div>`;
+
+  osWrap.innerHTML = r.photoOs
+    ? `<img class="detail-photo-img" src="${r.photoOs}">`
+    : `<div class="no-photo">Фото не добавлено</div>`;
+
+  document.getElementById('detail-share-btn').onclick = () => openShareModal(id);
+
+  document.getElementById('home').style.display = 'none';
+  document.getElementById('form-view').style.display = 'none';
+  document.getElementById('detail-view').style.display = 'block';
+}
+
+// ===== RENDER LIST =====
+function renderList() {
+  const list = document.getElementById('reports-list');
+  const empty = document.getElementById('empty-state');
+  list.innerHTML = '';
+  if (reports.length === 0) {
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+  const sorted = [...reports].reverse();
+  sorted.forEach(r => {
+    const photoCount = [r.photoInv, r.photoOs].filter(Boolean).length;
+    const card = document.createElement('div');
+    card.className = 'report-card';
+    card.innerHTML = `
+      <div class="report-card-info" onclick="showDetail('${r.id}')">
+        <div class="report-card-inv">№ ${r.invNumber}</div>
+        <div class="report-card-date">📅 ${r.date}</div>
+        <div class="report-card-photos">📷 ${photoCount}/2 фото</div>
+      </div>
+      <div class="card-actions">
+        <button class="btn-icon btn-share" onclick="openShareModal('${r.id}')">📤</button>
+        <button class="btn-icon btn-delete" onclick="deleteReport('${r.id}')">🗑️</button>
+      </div>
+    `;
+    list.appendChild(card);
+  });
+}
+
+// ===== PHOTO =====
+function triggerPhoto(type) {
+  document.getElementById('file-' + type).click();
+}
+
+function resetSlot(type) {
+  const slot = document.getElementById('slot-' + type);
+  const placeholder = document.getElementById('slot-' + type + '-placeholder');
+  const existingImg = slot.querySelector('img');
+  const existingBtn = slot.querySelector('.photo-retake-btn');
+  const existingBadge = slot.querySelector('.photo-slot-badge');
+  if (existingImg) existingImg.remove();
+  if (existingBtn) existingBtn.remove();
+  if (existingBadge) existingBadge.remove();
+  if (placeholder) placeholder.style.display = 'block';
+  slot.classList.remove('has-photo');
+  if (type === 'inv') {
+    const guide = document.getElementById('inv-guide');
+    if (guide) guide.style.display = 'block';
+  }
+}
+
+async function handlePhoto(event, type) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = async (e) => {
+    const dataUrl = e.target.result;
+
+    // Check quality (simple blur/darkness heuristic using canvas)
+    const quality = await checkImageQuality(dataUrl);
+
+    const warnEl = document.getElementById('warn-' + type);
+
+    if (!quality.ok) {
+      warnEl.classList.add('show');
+      warnEl.textContent = quality.reason === 'dark'
+        ? '⚠️ Фото слишком тёмное. Рекомендуется переснять при лучшем освещении.'
+        : '⚠️ Фото размытое. Пожалуйста, сделайте фото повторно чётче.';
+    } else {
+      warnEl.classList.remove('show');
+    }
+
+    photoData[type] = dataUrl;
+
+    const slot = document.getElementById('slot-' + type);
+    const placeholder = document.getElementById('slot-' + type + '-placeholder');
+    if (placeholder) placeholder.style.display = 'none';
+    if (type === 'inv') {
+      const guide = document.getElementById('inv-guide');
+      if (guide) guide.style.display = 'none';
+    }
+
+    const oldImg = slot.querySelector('img');
+    if (oldImg) oldImg.remove();
+    const oldBtn = slot.querySelector('.photo-retake-btn');
+    if (oldBtn) oldBtn.remove();
+    const oldBadge = slot.querySelector('.photo-slot-badge');
+    if (oldBadge) oldBadge.remove();
+
+    const img = document.createElement('img');
+    img.src = dataUrl;
+    slot.appendChild(img);
+
+    if (!quality.ok) {
+      const badge = document.createElement('div');
+      badge.className = 'photo-slot-badge';
+      badge.style.background = '#f7a34f';
+      badge.textContent = '⚠️ Переснять';
+      slot.appendChild(badge);
+    } else {
+      const badge = document.createElement('div');
+      badge.className = 'photo-slot-badge';
+      badge.textContent = '✓ Готово';
+      slot.appendChild(badge);
+    }
+
+    const retakeBtn = document.createElement('button');
+    retakeBtn.className = 'photo-retake-btn';
+    retakeBtn.innerHTML = '🔄 Переснять';
+    retakeBtn.onclick = (ev) => { ev.stopPropagation(); triggerPhoto(type); };
+    slot.appendChild(retakeBtn);
+
+    slot.classList.add('has-photo');
+    event.target.value = '';
+  };
+  reader.readAsDataURL(file);
+}
+
+async function checkImageQuality(dataUrl) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      const size = 100;
+      canvas.width = size; canvas.height = size;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, size, size);
+      const data = ctx.getImageData(0, 0, size, size).data;
+
+      // Check darkness
+      let totalBrightness = 0;
+      for (let i = 0; i < data.length; i += 4) {
+        totalBrightness += (data[i] + data[i+1] + data[i+2]) / 3;
+      }
+      const avgBrightness = totalBrightness / (size * size);
+      if (avgBrightness < 35) {
+        resolve({ ok: false, reason: 'dark' });
+        return;
+      }
+
+      // Check blur via edge detection (Laplacian variance)
+      let variance = 0;
+      const gray = [];
+      for (let i = 0; i < data.length; i += 4) {
+        gray.push(0.299 * data[i] + 0.587 * data[i+1] + 0.114 * data[i+2]);
+      }
+      let lap = [];
+      for (let y = 1; y < size - 1; y++) {
+        for (let x = 1; x < size - 1; x++) {
+          const idx = y * size + x;
+          const v = -gray[idx-size-1] - gray[idx-size] - gray[idx-size+1]
+                    - gray[idx-1] + 8*gray[idx] - gray[idx+1]
+                    - gray[idx+size-1] - gray[idx+size] - gray[idx+size+1];
+          lap.push(v);
+        }
+      }
+      const mean = lap.reduce((a,b)=>a+b,0)/lap.length;
+      variance = lap.reduce((a,b)=>a+(b-mean)**2,0)/lap.length;
+
+      if (variance < 80) {
+        resolve({ ok: false, reason: 'blur' });
+        return;
+      }
+
+      resolve({ ok: true });
+    };
+    img.src = dataUrl;
+  });
+}
+
+// ===== SAVE =====
+function saveReport() {
+  const inv = document.getElementById('inv-number').value.trim();
+  if (!inv) {
+    showToast('⚠️ Укажите инвентарный номер');
+    document.getElementById('inv-number').focus();
+    return;
+  }
+
+  const now = new Date();
+  const date = now.toLocaleDateString('ru-RU', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' });
+
+  const report = {
+    id: Date.now().toString(),
+    invNumber: inv,
+    date,
+    photoInv: photoData.inv,
+    photoOs: photoData.os
+  };
+
+  reports.push(report);
+  saveToStorage();
+  showHome();
+  showToast('✅ Отчёт сохранён');
+}
+
+function deleteReport(id) {
+  if (!confirm('Удалить этот отчёт?')) return;
+  reports = reports.filter(r => r.id !== id);
+  saveToStorage();
+  renderList();
+  showToast('🗑️ Отчёт удалён');
+}
+
+function saveToStorage() {
+  try {
+    localStorage.setItem('os-reports', JSON.stringify(reports));
+  } catch(e) {
+    // Storage full - trim old photos
+    const slim = reports.map(r => ({...r, photoInv: null, photoOs: null}));
+    localStorage.setItem('os-reports', JSON.stringify(slim));
+  }
+}
+
+// ===== SHARE =====
+function openShareModal(id) {
+  currentShareId = id;
+  document.getElementById('share-modal').classList.add('show');
+}
+
+function closeShareModal(e) {
+  if (e.target === document.getElementById('share-modal')) {
+    document.getElementById('share-modal').classList.remove('show');
+  }
+}
+
+async function shareVia(method) {
+  document.getElementById('share-modal').classList.remove('show');
+  const r = reports.find(x => x.id === currentShareId);
+  if (!r) return;
+
+  const text = `📋 ФОТООТЧЁТ СПИСАНИЯ ОС\n\n📌 Инвентарный номер: ${r.invNumber}\n📅 Дата: ${r.date}\n\n[Отчёт сформирован через приложение Списание ОС]`;
+
+  if (method === 'native' && navigator.share) {
+    try {
+      const files = [];
+      if (r.photoInv) files.push(await dataUrlToFile(r.photoInv, `inv_${r.invNumber}.jpg`));
+      if (r.photoOs) files.push(await dataUrlToFile(r.photoOs, `os_${r.invNumber}.jpg`));
+
+      if (files.length > 0 && navigator.canShare && navigator.canShare({ files })) {
+        await navigator.share({ title: `Списание ОС: ${r.invNumber}`, text, files });
+      } else {
+        await navigator.share({ title: `Списание ОС: ${r.invNumber}`, text });
+      }
+    } catch(e) { /* user cancelled */ }
+    return;
+  }
+
+  const encoded = encodeURIComponent(text);
+
+  if (method === 'whatsapp') {
+    window.open(`https://wa.me/?text=${encoded}`, '_blank');
+  } else if (method === 'telegram') {
+    window.open(`https://t.me/share/url?url=&text=${encoded}`, '_blank');
+  } else if (method === 'email') {
+    const subject = encodeURIComponent(`Фотоотчёт списания ОС: ${r.invNumber}`);
+    window.open(`mailto:?subject=${subject}&body=${encoded}`, '_blank');
+  } else if (method === 'native') {
+    // Fallback if navigator.share not supported
+    if (navigator.clipboard) {
+      await navigator.clipboard.writeText(text);
+      showToast('📋 Текст скопирован в буфер');
+    }
+  }
+}
+
+async function dataUrlToFile(dataUrl, filename) {
+  const res = await fetch(dataUrl);
+  const blob = await res.blob();
+  return new File([blob], filename, { type: 'image/jpeg' });
+}
+
+// ===== TOAST =====
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+// ===== INIT =====
+renderList();
+</script>
+</body>
+</html>
