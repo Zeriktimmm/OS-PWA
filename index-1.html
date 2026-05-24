@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Фотоотчёт Списания ОС</title>
+  <title>Фотоотчёт ОС</title>
   
   <meta name="theme-color" content="#2563eb">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -13,386 +13,132 @@
   
   <style>
     :root {
-      --primary: #2563eb;
-      --primary-dark: #1d4ed8;
+      --primary: #3b82f6;
+      --primary-dark: #2563eb;
       --bg: #f8fafc;
       --card-bg: #ffffff;
-      --text: #0f172a;
-      --border: #e2e8f0;
+      --text: #1e293b;
+      --border: #cbd5e1;
       --danger: #ef4444;
     }
     
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-    body { background-color: var(--bg); color: var(--text); padding: 16px; padding-bottom: 90px; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background-color: var(--bg); color: var(--text); padding-bottom: 30px; -webkit-user-select: none; user-select: none; }
     
-    header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-    h1 { font-size: 1.25rem; font-weight: 700; }
-    
-    .btn {
-      background: var(--primary); color: white; border: none; padding: 10px 16px;
-      border-radius: 8px; font-weight: 600; font-size: 0.9rem; cursor: pointer;
-      display: inline-flex; align-items: center; gap: 8px;
+    /* Шапка экранов */
+    .navbar {
+      background: var(--card-bg); height: 60px; display: flex; align-items: center; 
+      justify-content: space-between; padding: 0 16px; border-bottom: 1px solid var(--border);
+      position: sticky; top: 0; z-index: 90;
     }
-    .btn:active { background: var(--primary-dark); }
-    .btn-danger { background: var(--danger); }
+    .navbar h1 { font-size: 1.15rem; font-weight: 600; }
     
-    /* Табличный вид карточек ОС как в ТЗ */
-    .os-card {
-      background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px;
-      padding: 16px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-      position: relative;
+    /* Кнопки */
+    .btn-create {
+      background: var(--primary); color: white; border: none; padding: 6px 14px;
+      border-radius: 20px; font-weight: 600; font-size: 0.85rem; cursor: pointer;
+      display: flex; align-items: center; gap: 4px;
     }
-    .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-    .card-title { font-weight: 600; color: #64748b; font-size: 0.85rem; }
+    .btn-create:active { background: var(--primary-dark); }
     
-    .form-group { margin-bottom: 12px; }
-    .form-group label { display: block; font-size: 0.8rem; font-weight: 600; color: #475569; margin-bottom: 4px; }
-    .input-text { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 1rem; }
+    .top-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 12px 16px; }
+    .btn-action {
+      background: var(--primary); color: white; border: none; padding: 10px;
+      border-radius: 6px; font-weight: 600; font-size: 0.9rem; text-align: center; cursor: pointer;
+    }
+    .btn-action:active { background: var(--primary-dark); }
     
-    /* Фото-превью */
-    .photo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 8px; }
-    .photo-box {
-      border: 2px dashed var(--border); border-radius: 8px; height: 120px;
+    /* Стили выпадающего списка */
+    .selector-group { background: var(--card-bg); margin: 0 16px 12px 16px; padding: 10px 12px; border: 1px solid var(--border); border-radius: 6px; display: flex; align-items: center; justify-content: space-between; }
+    .selector-group label { font-size: 0.85rem; font-weight: 600; color: #475569; }
+    .custom-select {
+      border: 1px solid var(--border); background: #f8fafc; padding: 6px 24px 6px 10px;
+      font-size: 0.9rem; font-weight: 600; border-radius: 4px; color: var(--text);
+      appearance: none; -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23475569'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 6px center; background-size: 14px;
+    }
+
+    /* Экран Главная: Пустое состояние */
+    .empty-state {
       display: flex; flex-direction: column; align-items: center; justify-content: center;
-      font-size: 0.75rem; color: #64748b; cursor: pointer; position: relative; overflow: hidden;
-      background-position: center; background-size: contain; background-repeat: no-repeat;
-      background-color: #f1f5f9; text-align: center; padding: 4px;
+      margin-top: 140px; color: #94a3b8; text-align: center; gap: 16px;
     }
-    .photo-box.has-img { border-style: solid; border-color: #10b981; }
-    .photo-box.has-img span { display: none; }
+    .empty-icon {
+      width: 80px; height: 80px; background: #e2e8f0; border-radius: 16px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .empty-icon svg { width: 40px; height: 40px; fill: #64748b; }
+    .empty-state p { font-size: 1.1rem; font-weight: 600; color: #64748b; }
     
-    /* Камера */
+    /* Список сохраненных отчетов на главной */
+    .reports-list { padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+    .report-card {
+      background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px;
+      padding: 14px; display: flex; justify-content: space-between; align-items: center;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+    }
+    .report-info h3 { font-size: 1rem; font-weight: 700; margin-bottom: 4px; color: #0f172a; }
+    .report-info p { font-size: 0.8rem; color: #64748b; font-weight: 500; }
+    .report-card-actions { display: flex; gap: 8px; }
+    .btn-icon {
+      width: 36px; height: 36px; border: 1px solid var(--border); border-radius: 6px;
+      display: flex; align-items: center; justify-content: center; background: #f8fafc; cursor: pointer;
+    }
+
+    /* Модульная таблица создания фотоотчета */
+    .table-container { margin: 0 16px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+    .table-header {
+      display: grid; grid-template-columns: 0.5fr 1.2fr 1.4fr 1.4fr; background: #f1f5f9;
+      border-bottom: 1px solid var(--border); text-align: center; font-size: 0.7rem; font-weight: 700; color: #475569;
+    }
+    .table-header div { padding: 8px 2px; display: flex; align-items: center; justify-content: center; border-right: 1px solid var(--border); }
+    .table-header div:last-child { border-right: none; }
+    
+    .table-row {
+      display: grid; grid-template-columns: 0.5fr 1.2fr 1.4fr 1.4fr; border-bottom: 1px solid #e2e8f0; min-height: 75px;
+    }
+    .table-row:last-child { border-bottom: none; }
+    
+    .cell {
+      display: flex; align-items: center; justify-content: center; padding: 4px;
+      border-right: 1px solid #e2e8f0; position: relative; font-size: 0.85rem; font-weight: 600;
+    }
+    .cell:last-child { border-right: none; }
+    
+    .cell-input {
+      width: 100%; height: 100%; border: none; font-size: 0.8rem; font-weight: 600;
+      text-align: center; color: var(--text); background: transparent; outline: none;
+    }
+    .cell-photo {
+      width: 100%; height: 65px; border-radius: 4px; background: #f8fafc;
+      border: 1px dashed var(--border); display: flex; align-items: center; justify-content: center;
+      cursor: pointer; background-position: center; background-size: cover; background-repeat: no-repeat;
+    }
+    .cell-photo svg { width: 20px; height: 20px; fill: #94a3b8; }
+    .cell-photo.has-img svg { display: none; }
+    .cell-photo.has-img { border-style: solid; border-color: #10b981; }
+
+    /* Кнопка добавления строк под таблицей */
+    .add-row-container { margin: 12px 16px; text-align: center; }
+    .btn-add-row {
+      width: 100%; background: #f1f5f9; color: #475569; border: 1px dashed var(--border);
+      padding: 12px; border-radius: 6px; font-weight: 600; font-size: 0.9rem; cursor: pointer;
+    }
+    .btn-add-row:active { background: #e2e8f0; }
+
+    /* Оверлей Модуля Камеры */
     #camera-overlay {
       position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
       background: black; z-index: 9999; display: none; flex-direction: column;
     }
     #video-preview { width: 100%; height: 100%; object-fit: cover; }
-    
-    /* Точная рамка 2х4 см (пропорция 1:2) */
     .scanner-frame-container {
       position: absolute; top: 0; left: 0; width: 100%; height: 100%;
       display: flex; align-items: center; justify-content: center; pointer-events: none;
     }
-    .scanner-mask {
-      position: absolute; width: 100%; height: 100%;
-      box-shadow: inset 0 0 0 2000px rgba(0,0,0,0.6);
-    }
-    .scanner-box {
-      position: relative; width: 280px; height: 140px;
-      border: 3px solid #3b82f6; border-radius: 4px; box-shadow: 0 0 15px rgba(59,130,246,0.5);
-    }
-    .scanner-tip {
-      position: absolute; bottom: -35px; left: 0; width: 100%; text-align: center;
-      color: white; font-size: 0.85rem; font-weight: bold; text-shadow: 0 1px 4px rgba(0,0,0,0.8);
-    }
-    
-    .camera-controls {
-      position: absolute; bottom: 30px; left: 0; width: 100%;
-      display: flex; justify-content: space-around; align-items: center; padding: 0 20px;
-    }
-    .shutter-btn { width: 70px; height: 70px; background: white; border-radius: 50%; border: 5px solid #cbd5e1; }
-    .shutter-btn:active { background: #cbd5e1; }
-    .cancel-cam-btn { color: white; background: rgba(255,255,255,0.2); border: none; padding: 10px 16px; border-radius: 20px; }
-
-    /* Панель кнопок */
-    .bottom-bar {
-      position: fixed; bottom: 0; left: 0; width: 100%; background: var(--card-bg);
-      border-top: 1px solid var(--border); padding: 12px 16px; display: flex; gap: 12px; z-index: 100;
-    }
-    .bottom-bar .btn { flex: 1; justify-content: center; padding: 14px; font-size: 1rem; }
-  </style>
-</head>
-<body>
-
-  <header>
-    <h1>Списание ОС</h1>
-    <button class="btn btn-danger" onclick="clearAll()" style="padding: 6px 12px; font-size: 0.8rem;">Очистить</button>
-  </header>
-
-  <div id="os-container"></div>
-
-  <div class="bottom-bar">
-    <button class="btn" onclick="addOSRow()">➕ Позиция</button>
-    <button class="btn" onclick="generateAndShareExcel()" style="background: #10b981;">📤 Отправить в Excel</button>
-  </div>
-
-  <div id="camera-overlay">
-    <video id="video-preview" autoplay playsinline></video>
-    <div class="scanner-frame-container" id="scanner-frame-wrapper">
-      <div class="scanner-mask"></div>
-      <div class="scanner-box">
-        <div class="scanner-tip">Поместите инвентарный номер в рамку</div>
-      </div>
-    </div>
-    <div class="camera-controls">
-      <button class="cancel-cam-btn" onclick="stopCamera()">Отмена</button>
-      <button class="shutter-btn" onclick="takeSnapshot()"></button>
-      <div style="width: 70px;"></div>
-    </div>
-  </div>
-
-  <canvas id="hidden-canvas" style="display:none;"></canvas>
-
-  <script>
-    let reportData = [];
-    let currentTarget = { id: null, type: null };
-    let localStream = null;
-
-    window.addEventListener('DOMContentLoaded', () => {
-      addOSRow();
-    });
-
-    function addOSRow() {
-      const id = Date.now();
-      const osItem = { id: id, invNumber: '', photoInv: null, photoGeneral: null };
-      reportData.push(osItem);
-
-      const container = document.getElementById('os-container');
-      const card = document.createElement('div');
-      card.className = 'os-card';
-      card.id = card-${id};
-      card.innerHTML = `
-        <div class="card-header">
-          <span class="card-title">Строка таблицы №${reportData.length}</span>
-          <span style="color: var(--danger); font-size: 0.85rem; cursor:pointer; font-weight:600;" onclick="removeOSRow(${id})">Удалить</span>
-        </div>
-        <div class="form-group">
-          <label>Инвентарный номер</label>
-          <input type="text" class="input-text" placeholder="3-XXXXX" oninput="updateInvNum(${id}, this.value)">
-        </div>
-        <div class="photo-grid">
-          <div class="photo-box" id="thumb-inv-${id}" onclick="openCamera(${id}, 'inv')">
-            <span>📸 Фото инвентарного номера<br>(В рамку 2х4 см)</span>
-          </div>
-          <div class="photo-box" id="thumb-gen-${id}" onclick="openCamera(${id}, 'gen')">
-            <span>📸 Общий вид ОС</span>
-          </div>
-        </div>
-      `;
-      container.appendChild(card);
-      window.scrollTo(0, document.body.scrollHeight);
-    }
-
-    function removeOSRow(id) {
-      reportData = reportData.filter(item => item.id !== id);
-      document.getElementById(card-${id}).remove();
-    }
-
-    function updateInvNum(id, value) {
-      const item = reportData.find(item => item.id === id);
-      if (item) item.invNumber = value;
-    }
-
-    function clearAll() {
-      if(confirm("Очистить таблицу?")) {
-        document.getElementById('os-container').innerHTML = '';
-        reportData = [];
-        addOSRow();
-      }
-    }
-
-    async function openCamera(id, type) {
-      currentTarget = { id, type };
-      const overlay = document.getElementById('camera-overlay');
-      const frameWrapper = document.getElementById('scanner-frame-wrapper');
-      
-      frameWrapper.style.display = (type === 'inv') ? 'flex' : 'none';
-      overlay.style.display = 'flex';
-
-      try {
-        localStream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } },
-          audio: false
-        });
-        document.getElementById('video-preview').srcObject = localStream;
-      } catch (err) {
-        alert("Нет доступа к камере.");
-        stopCamera();
-      }
-    }
-
-    function stopCamera() {
-      if (localStream) {
-        localStream.getTracks().forEach(track => track.stop());
-      }
-      document.getElementById('camera-overlay').style.display = 'none';
-    }
-
-    function takeSnapshot() {
-      const video = document.getElementById('video-preview');
-      const canvas = document.getElementById('hidden-canvas');
-      const ctx = canvas.getContext('2d');
-
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-      if (currentTarget.type === 'inv') {
-        const isSharp = checkBlurriness(ctx, canvas.width, canvas.height);
-        if (!isSharp) {
-          if (!confirm("⚠️ Изображение кажется размытым! Текст инвентарника может быть не виден. Переснять? Нажмите 'Отмена', чтобы сделать новое фото, или 'ОК', чтобы оставить это.")) {
-            return;
-          }
-        }
-      }
-
-      const imgDataUrl = canvas.toDataURL('image/jpeg', 0.6);
-      const item = reportData.find(item => item.id === currentTarget.id);
-      if (item) {
-        if (currentTarget.type === 'inv') item.photoInv = imgDataUrl;
-        else item.photoGeneral = imgDataUrl;
-      }
-
-      const thumbId = currentTarget.type === 'inv' ? thumb-inv-${currentTarget.id} : thumb-gen-${currentTarget.id};
-      const thumb = document.getElementById(thumbId);
-      thumb.style.backgroundImage = url(${imgDataUrl});
-      thumb.classList.add('has-img');
-
-      stopCamera();
-    }
-
-    function checkBlurriness(ctx, width, height) {
-      const size = 160;
-      const startX = Math.floor(width / 2 - size / 2);
-      const startY = Math.floor(height / 2 - size / 2);
-      const imgData = ctx.getImageData(startX, startY, size, size);
-      const data = imgData.data;
-      let totalDiff = 0;
-      for (let i = 0; i < data.length - 4; i += 4) {
-        const bCurrent = (data[i] + data[i+1] + data[i+2]) / 3;
-        const bNext = (data[i+4] + data[i+5] + data[i+6]) / 3;
-        totalDiff += Math.abs(bCurrent - bNext);
-      }
-      return (totalDiff / (size * size)) > 10;
-    }
-
-    // Генерация красивого Excel-файла со структурой точь-в-точь как на фото!
-    async function generateAndShareExcel() {
-      if (reportData.length === 0) {
-        alert("Добавьте строки для выгрузки!");
-        return;
-      }
-
-      const workbook = new ExcelJS.Workbook();
-      const worksheet = workbook.addWorksheet('Списание ОС');
-
-      // Настройка колонок и ширины
-      worksheet.columns = [
-        { header: '№ п/п', key: 'idx', width: 8 },
-        { header: 'Инвентарный номер', key: 'invNum', width: 25 },
-        { header: 'Фото инвентарного номера', key: 'imgInv', width: 35 },
-        { header: 'Общий вид ОС', key: 'imgGen', width: 35 }
-      ];
-
-      // Стилизация шапки таблицы
-      const headerRow = worksheet.getRow(1);
-      headerRow.height = 28;
-      headerRow.eachCell((cell) => {
-        cell.font = { name: 'Arial', size: 11, bold: true };
-        cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFEAEAEA' } };
-        cell.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
-        cell.border = {
-          top: { style: 'thin' }, left: { style: 'thin' },
-          bottom: { style: 'medium' }, right: { style: 'thin' }
-        };
-      });
-
-      // Заполняем данными
-      for (let i = 0; i < reportData.length; i++) {
-        const item = reportData[i];
-        const rowNum = i + 2;
-        const row = worksheet.getRow(rowNum);
-        
-        row.getCell(1).value = i + 1;
-        row.getCell(2).value = item.invNumber || '';
-        
-        // Задаем высоту строки под пропорции картинок
-        row.height = 110;
-
-        // Центрируем текст инвентарников
-        row.getCell(1).alignment = { vertical: 'middle', horizontal: 'center' };
-        row.getCell(2).alignment = { vertical: 'middle', horizontal: 'center', font: { size: 12, bold: true } };
-
-        // Применяем рамки к ячейкам
-        for(let col=1; col<=4; col++) {
-          row.getCell(col).border = {
-            top: { style: 'thin' }, left: { style: 'thin' },
-            bottom: { style: 'thin' }, right: { style: 'thin' }
-          };
-        }
-
-        // Вставка Фото инвентарного номера
-        if (item.photoInv) {
-          const imageId = workbook.addImage({
-            base64: item.photoInv,
-            extension: 'jpeg',
-          });
-          worksheet.addImage(imageId, {
-            tl: { col: 2.1, row: rowNum - 0.9 },
-            ext: { width: 230, height: 130 },
-            editAs: 'undefined'
-          });
-        }
-
-        // Вставка Фото общего вида
-        if (item.photoGeneral) {
-          const imageId = workbook.addImage({
-            base64: item.photoGeneral,
-            extension: 'jpeg',
-          });
-          worksheet.addImage(imageId, {
-            tl: { col: 3.1, row: rowNum - 0.9 },
-            ext: { width: 230, height: 130 },
-            editAs: 'undefined'
-          });
-        }
-      }
-
-      // Генерируем blob-файл
-      const buffer = await workbook.xlsx.writeBuffer();
-      const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-      const filename = Otchet_Spisanie_OS_${new Date().toISOString().slice(0,10)}.xlsx;
-      const file = new File([blob], filename, { type: blob.type });
-
-      // Отправляем через системное меню Поделиться (WhatsApp, Telegram, Почта)
-      if (navigator.canShare && navigator.canShare({ files: [file] })) {
-        try {
-          await navigator.share({
-            files: [file],
-            title: 'Фотоотчёт списания основных средств',
-            text: 'Готовый отчет во вложении'
-          });
-        } catch (err) {
-          if (err.name !== "AbortError") alert("Ошибка отправки: " + err.message);
-        }
-      } else {
-        // Резервное скачивание, если браузер жестко заблокировал шаринг файлов
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.download = filename;
-        link.click();
-        alert("Файл Excel сформирован и скачан в память устройства! Отправьте его вручную через любой мессенджер.");
-      }
-    }
-  </script>
-
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        const swCode = `
-          const CACHE_NAME = 'os-excel-v2';
-          self.addEventListener('install', e => {
-            e.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(['./'])));
-          });
-          self.addEventListener('fetch', e => {
-            e.respondWith(caches.match(e.request).then(res => res || fetch(e.request)));
-          });
-        `;
-        const blob = new Blob([swCode], {type: 'application/javascript'});
-        const workerUrl = URL.createObjectURL(blob);
-        navigator.serviceWorker.register(workerUrl).catch(err => console.log('SW error', err));
-      });
-    }
-  </script>
-</body>
-</html>
+    .scanner-mask { position: absolute; width: 100%; height: 100%; box-shadow: inset 0 0 0 2000px rgba(0,0,0,0.6); }
+    .scanner-box { position: relative; width: 280px; height: 140px; border: 3px solid #3b82f6; border-radius: 4px; }
+    .scanner-tip { position: absolute; bottom: -35px; left: 0; width: 100%; text-align: center; color: white; font-size: 0.85rem; font-weight: bold; }
+    .camera-controls { position: absolute; bottom: 30px; left: 0; width: 100%; display: flex; justify-content: space-around; align-items: center; padding: 0 20px; }
+    .shutter
