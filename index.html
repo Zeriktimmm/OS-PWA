@@ -4,178 +4,481 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Фотоотчёт ОС</title>
+  
   <meta name="theme-color" content="#2563eb">
   <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  
   <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
+  
   <style>
-    :root { --primary: #3b82f6; --bg: #f8fafc; --card-bg: #ffffff; --text: #1e293b; --border: #cbd5e1; --danger: #ef4444; }
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
-    body { background-color: var(--bg); color: var(--text); padding-bottom: 30px; }
-    .navbar { background: var(--card-bg); height: 60px; display: flex; align-items: center; justify-content: space-between; padding: 0 16px; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 90; }
+    :root {
+      --primary: #3b82f6;
+      --primary-dark: #2563eb;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #1e293b;
+      --border: #cbd5e1;
+      --danger: #ef4444;
+    }
+    
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background-color: var(--bg); color: var(--text); padding-bottom: 30px; -webkit-user-select: none; user-select: none; }
+    
+    .navbar {
+      background: var(--card-bg); height: 60px; display: flex; align-items: center; 
+      justify-content: space-between; padding: 0 16px; border-bottom: 1px solid var(--border);
+      position: sticky; top: 0; z-index: 90;
+    }
     .navbar h1 { font-size: 1.15rem; font-weight: 600; }
-    .btn-create { background: var(--primary); color: white; border: none; padding: 8px 16px; border-radius: 20px; font-weight: 600; cursor: pointer; }
+    
+    .btn-create {
+      background: var(--primary); color: white; border: none; padding: 6px 14px;
+      border-radius: 20px; font-weight: 600; font-size: 0.85rem; cursor: pointer;
+      display: flex; align-items: center; gap: 4px;
+    }
+    
     .top-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 12px 16px; }
-    .btn-action { background: var(--primary); color: white; border: none; padding: 10px; border-radius: 6px; font-weight: 600; text-align: center; cursor: pointer; }
+    .btn-action {
+      background: var(--primary); color: white; border: none; padding: 10px;
+      border-radius: 6px; font-weight: 600; font-size: 0.9rem; text-align: center; cursor: pointer;
+    }
+    
     .selector-group { background: var(--card-bg); margin: 0 16px 12px 16px; padding: 10px 12px; border: 1px solid var(--border); border-radius: 6px; display: flex; align-items: center; justify-content: space-between; }
-    .custom-select { border: 1px solid var(--border); padding: 6px 10px; font-size: 0.9rem; font-weight: 600; border-radius: 4px; }
-    .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; margin-top: 140px; color: #94a3b8; gap: 16px; }
+    .selector-group label { font-size: 0.85rem; font-weight: 600; color: #475569; }
+    .custom-select {
+      border: 1px solid var(--border); background: #f8fafc; padding: 6px 24px 6px 10px;
+      font-size: 0.9rem; font-weight: 600; border-radius: 4px; color: var(--text);
+      appearance: none; -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23475569'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 6px center; background-size: 14px;
+    }
+
+    .empty-state {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      margin-top: 140px; color: #94a3b8; text-align: center; gap: 16px;
+    }
+    .empty-icon {
+      width: 80px; height: 80px; background: #e2e8f0; border-radius: 16px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .empty-icon svg { width: 40px; height: 40px; fill: #64748b; }
+    .empty-state p { font-size: 1.1rem; font-weight: 600; color: #64748b; }
+    
     .reports-list { padding: 16px; display: flex; flex-direction: column; gap: 12px; }
-    .report-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; padding: 14px; display: flex; justify-content: space-between; align-items: center; }
+    .report-card {
+      background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px;
+      padding: 14px; display: flex; justify-content: space-between; align-items: center;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+    }
+    .report-info h3 { font-size: 1rem; font-weight: 700; margin-bottom: 4px; color: #0f172a; }
+    .report-info p { font-size: 0.8rem; color: #64748b; font-weight: 500; }
     .report-card-actions { display: flex; gap: 8px; }
-    .btn-icon { padding: 6px 12px; border: 1px solid var(--border); border-radius: 6px; background: #f8fafc; cursor: pointer; font-weight: bold; }
+    .btn-icon {
+      width: 36px; height: 36px; border: 1px solid var(--border); border-radius: 6px;
+      display: flex; align-items: center; justify-content: center; background: #f8fafc; cursor: pointer;
+    }
+
     .table-container { margin: 0 16px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
-    .table-header { display: grid; grid-template-columns: 0.5fr 1.2fr 1.4fr 1.4fr; background: #f1f5f9; border-bottom: 1px solid var(--border); text-align: center; font-size: 0.75rem; font-weight: 700; }
-    .table-header div { padding: 8px 2px; border-right: 1px solid var(--border); }
+    .table-header {
+      display: grid; grid-template-columns: 0.5fr 1.2fr 1.4fr 1.4fr; background: #f1f5f9;
+      border-bottom: 1px solid var(--border); text-align: center; font-size: 0.7rem; font-weight: 700; color: #475569;
+    }
+    .table-header div { padding: 8px 2px; display: flex; align-items: center; justify-content: center; border-right: 1px solid var(--border); }
     .table-header div:last-child { border-right: none; }
-    .table-row { display: grid; grid-template-columns: 0.5fr 1.2fr 1.4fr 1.4fr; border-bottom: 1px solid #e2e8f0; min-height: 75px; }
+    
+    .table-row {
+      display: grid; grid-template-columns: 0.5fr 1.2fr 1.4fr 1.4fr; border-bottom: 1px solid #e2e8f0; min-height: 75px;
+    }
     .table-row:last-child { border-bottom: none; }
-    .cell { display: flex; align-items: center; justify-content: center; padding: 4px; border-right: 1px solid #e2e8f0; font-size: 0.85rem; }
+    
+    .cell {
+      display: flex; align-items: center; justify-content: center; padding: 4px;
+      border-right: 1px solid #e2e8f0; position: relative; font-size: 0.85rem; font-weight: 600;
+    }
     .cell:last-child { border-right: none; }
-    .cell-input { width: 100%; height: 100%; border: none; text-align: center; outline: none; font-weight: 600; }
-    .cell-photo { width: 100%; height: 65px; border-radius: 4px; background: #f8fafc; border: 1px dashed var(--border); display: flex; align-items: center; justify-content: center; cursor: pointer; background-position: center; background-size: cover; background-repeat: no-repeat; font-size: 0.75rem; color: #64748b; }
-    .cell-photo.has-img { border-style: solid; border-color: #10b981; color: transparent; }
-    .add-row-container { margin: 12px 16px; }
-    .btn-add-row { width: 100%; background: #f1f5f9; border: 1px dashed var(--border); padding: 12px; border-radius: 6px; font-weight: 600; cursor: pointer; }
-    #camera-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: black; z-index: 9999; display: none; flex-direction: column; }
+    
+    .cell-input {
+      width: 100%; height: 100%; border: none; font-size: 0.8rem; font-weight: 600;
+      text-align: center; color: var(--text); background: transparent; outline: none;
+    }
+    .cell-photo {
+      width: 100%; height: 65px; border-radius: 4px; background: #f8fafc;
+      border: 1px dashed var(--border); display: flex; align-items: center; justify-content: center;
+      cursor: pointer; background-position: center; background-size: cover; background-repeat: no-repeat;
+    }
+    .cell-photo svg { width: 20px; height: 20px; fill: #94a3b8; }
+    .cell-photo.has-img svg { display: none; }
+    .cell-photo.has-img { border-style: solid; border-color: #10b981; }
+
+    .add-row-container { margin: 12px 16px; text-align: center; }
+    .btn-add-row {
+      width: 100%; background: #f1f5f9; color: #475569; border: 1px dashed var(--border);
+      padding: 12px; border-radius: 6px; font-weight: 600; font-size: 0.9rem; cursor: pointer;
+    }
+
+    #camera-overlay {
+      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+      background: black; z-index: 9999; display: none; flex-direction: column;
+    }
     #video-preview { width: 100%; height: 100%; object-fit: cover; }
-    .scanner-frame-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; pointer-events: none; }
+    .scanner-frame-container {
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      display: flex; align-items: center; justify-content: center; pointer-events: none;
+    }
     .scanner-mask { position: absolute; width: 100%; height: 100%; box-shadow: inset 0 0 0 2000px rgba(0,0,0,0.6); }
-    .scanner-box { position: relative; width: 280px; height: 140px; border: 3px solid #3b82f6; }
-    .camera-controls { position: absolute; bottom: 30px; left: 0; width: 100%; display: flex; justify-content: space-around; align-items: center; }
-    .shutter-btn { width: 66px; height: 66px; background: white; border-radius: 50%; border: 5px solid #cbd5e1; cursor: pointer; }
-    .cancel-cam-btn { color: white; background: rgba(255,255,255,0.2); border: none; padding: 10px 16px; border-radius: 20px; }
+    .scanner-box { position: relative; width: 280px; height: 140px; border: 3px solid #3b82f6; border-radius: 4px; }
+    .scanner-tip { position: absolute; bottom: -35px; left: 0; width: 100%; text-align: center; color: white; font-size: 0.85rem; font-weight: bold; }
+    .camera-controls { position: absolute; bottom: 30px; left: 0; width: 100%; display: flex; justify-content: space-around; align-items: center; padding: 0 20px; }
+    .shutter-btn { width: 70px; height: 70px; background: white; border-radius: 50%; border: 5px solid #cbd5e1; cursor: pointer; }
+    .cancel-cam-btn { color: white; background: rgba(255,255,255,0.2); border: none; padding: 10px 16px; border-radius: 20px; cursor: pointer; }
   </style>
 </head>
 <body>
 
   <div id="screen-main">
-    <div class="navbar"><h1>Главная</h1><button class="btn-create" onclick="openCreateScreen()">+ Создать</button></div>
-    <div id="main-empty" class="empty-state"><p>У вас нет документов</p></div>
+    <div class="navbar">
+      <h1>Главная</h1>
+      <button class="btn-create" onclick="openCreateScreen()">+ Создать</button>
+    </div>
+    
+    <div id="main-empty" class="empty-state">
+      <div class="empty-icon">
+        <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+      </div>
+      <p>У вас нет документов</p>
+    </div>
+
     <div id="reports-list" class="reports-list" style="display: none;"></div>
   </div>
 
   <div id="screen-create" style="display: none;">
-    <div class="navbar"><span style="font-weight:600; cursor:pointer;" onclick="closeCreateScreen()">← Назад</span><h1>Создание отчета</h1><div></div></div>
-    <div class="top-actions">
-      <button class="btn-action" onclick="saveCurrentReport()">Сохранить</button>
-      <button class="btn-action" style="background:#10b981;" onclick="exportToExcel()">Поделиться</button>
+    <div class="navbar">
+      <span style="font-weight: 600; cursor: pointer; color: #64748b;" onclick="closeCreateScreen()">← Назад</span>
+      <h1 style="margin-right: 40px;">Создание фотоотчета</h1>
+      <div></div>
     </div>
+
+    <div class="top-actions">
+      <button class="btn-action" onclick="saveCurrentReport()">Сохранить отчет</button>
+      <button class="btn-action" style="background: #10b981;" onclick="exportToExcel()">Поделиться</button>
+    </div>
+
     <div class="selector-group">
-      <label>Тип отчета:</label>
+      <label>Наименование отчета:</label>
       <select id="report-type-select" class="custom-select">
         <option value="Списание">Списание</option>
         <option value="Реализация">Реализация</option>
         <option value="Благотворительность">Благотворительность</option>
       </select>
     </div>
+
     <div class="table-container">
-      <div class="table-header"><div>№</div><div>Инв. номер</div><div>Фото инв.</div><div>Общий вид</div></div>
+      <div class="table-header">
+        <div>№</div>
+        <div>Инвентарный<br>номер</div>
+        <div>Фото инвентарного<br>номера</div>
+        <div>Фото общего вида<br>ОС</div>
+      </div>
       <div id="dynamic-rows"></div>
     </div>
-    <div class="add-row-container"><button class="btn-add-row" onclick="addNewBlankRow()">➕ Добавить позицию</button></div>
+
+    <div class="add-row-container">
+      <button class="btn-add-row" onclick="addNewBlankRow()">➕ Добавить позицию</button>
+    </div>
   </div>
 
   <div id="camera-overlay">
     <video id="video-preview" autoplay playsinline></video>
     <div class="scanner-frame-container" id="scanner-frame-wrapper">
-      <div class="scanner-mask"></div><div class="scanner-box"></div>
+      <div class="scanner-mask"></div>
+      <div class="scanner-box">
+        <div class="scanner-tip">Поместите инвентарный номер в рамку</div>
+      </div>
     </div>
     <div class="camera-controls">
       <button class="cancel-cam-btn" onclick="stopCamera()">Отмена</button>
       <button class="shutter-btn" onclick="takeSnapshot()"></button>
-      <div style="width:70px;"></div>
+      <div style="width: 70px;"></div>
     </div>
   </div>
+
   <canvas id="hidden-canvas" style="display:none;"></canvas>
 
   <script>
-    let savedReports = []; let currentRows = []; let activeCameraTarget = { rowIndex: null, type: null }; let streamInstance = null;
-    function resetTable() { document.getElementById('dynamic-rows').innerHTML = ''; currentRows = []; addNewBlankRow(); }
-    
+    let savedReports = []; 
+    let currentRows = [];  
+    let activeCameraTarget = { rowIndex: null, type: null };
+    let streamInstance = null;
+
+    function resetTable() {
+      document.getElementById('dynamic-rows').innerHTML = '';
+      currentRows = [];
+      addNewBlankRow(); 
+    }
+
     function addNewBlankRow() {
       const index = currentRows.length;
       currentRows.push({ invNumber: '', photoInv: null, photoGen: null });
+      
       const container = document.getElementById('dynamic-rows');
       const row = document.createElement('div');
       row.className = 'table-row';
+      row.id = row-index-${index};
       row.innerHTML = `
-        <div class="cell" style="color:#64748b;">${index + 1}</div>
-        <div class="cell"><input type="text" class="cell-input" placeholder="Нажмите.." oninput="currentRows[${index}].invNumber=this.value"></div>
-        <div class="cell"><div class="cell-photo" id="p-inv-${index}" onclick="triggerCamera(${index}, 'inv')">[Фото]</div></div>
-        <div class="cell"><div class="cell-photo" id="p-gen-${index}" onclick="triggerCamera(${index}, 'gen')">[Фото]</div></div>
+        <div class="cell" style="color: #64748b;">${index + 1}</div>
+        <div class="cell"><input type="text" class="cell-input" placeholder="Нажмите.." oninput="updateRowText(${index}, this.value)"></div>
+        <div class="cell">
+          <div class="cell-photo" id="p-inv-${index}" onclick="triggerCamera(${index}, 'inv')">
+            <svg viewBox="0 0 24 24"><path d="M4 4h3l2-2h6l2 2h3c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2zm8 3c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zm0 2c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3z"/></svg>
+          </div>
+        </div>
+        <div class="cell">
+          <div class="cell-photo" id="p-gen-${index}" onclick="triggerCamera(${index}, 'gen')">
+            <svg viewBox="0 0 24 24"><path d="M4 4h3l2-2h6l2 2h3c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2zm8 3c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zm0 2c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3z"/></svg>
+          </div>
+        </div>
       `;
       container.appendChild(row);
     }
 
-    function openCreateScreen() { document.getElementById('screen-main').style.display = 'none'; document.getElementById('screen-create').style.display = 'block'; resetTable(); }
-    function closeCreateScreen() { document.getElementById('screen-main').style.display = 'block'; document.getElementById('screen-create').style.display = 'none'; }
-    
+    function openCreateScreen() {
+      document.getElementById('screen-main').style.display = 'none';
+      document.getElementById('screen-create').style.display = 'block';
+      document.getElementById('report-type-select').value = 'Списание';
+      resetTable();
+    }
+
+    function closeCreateScreen() {
+      document.getElementById('screen-main').style.display = 'block';
+      document.getElementById('screen-create').style.display = 'none';
+    }
+
+    function updateRowText(index, value) {
+      currentRows[index].invNumber = value;
+    }
+
     function saveCurrentReport() {
-      const filled = currentRows.filter(r => r.invNumber || r.photoInv || r.photoGen);
-      if (!filled.length) return alert("Заполните хотя бы одну строку");
-      savedReports.unshift({ id: Date.now(), type: document.getElementById('report-type-select').value, count: filled.length, date: new Date().toLocaleDateString('ru-RU'), data: [...currentRows] });
-      renderReportsList(); closeCreateScreen();
+      const filledItems = currentRows.filter(r => r.invNumber || r.photoInv || r.photoGen);
+      if (filledItems.length === 0) {
+        alert("Нельзя сохранить пустой отчет. Заполните хотя бы одну строчку.");
+        return;
+      }
+
+      const type = document.getElementById('report-type-select').value;
+      const today = new Date().toLocaleDateString('ru-RU');
+      
+      const newReport = {
+        id: Date.now(),
+        type: type,
+        count: filledItems.length,
+        date: today,
+        data: [...currentRows]
+      };
+
+      savedReports.unshift(newReport);
+      renderReportsList();
+      closeCreateScreen();
     }
 
     function renderReportsList() {
-      const empty = document.getElementById('main-empty'); const list = document.getElementById('reports-list');
-      if (!savedReports.length) { empty.style.display = 'flex'; list.style.display = 'none'; return; }
-      empty.style.display = 'none'; list.style.display = 'flex'; list.innerHTML = '';
+      const emptyBlock = document.getElementById('main-empty');
+      const listBlock = document.getElementById('reports-list');
+
+      if (savedReports.length === 0) {
+        emptyBlock.style.display = 'flex';
+        listBlock.style.display = 'none';
+        return;
+      }
+
+      emptyBlock.style.display = 'none';
+      listBlock.style.display = 'flex';
+      listBlock.innerHTML = '';
+
       savedReports.forEach(rep => {
-        const card = document.createElement('div'); card.className = 'report-card';
-        card.innerHTML = `<div><h3>${rep.type}</h3><p>Кол-во: ${rep.count}</p><p>${rep.date}</p></div>
+        const card = document.createElement('div');
+        card.className = 'report-card';
+        card.innerHTML = `
+          <div class="report-info">
+            <h3>${rep.type}</h3>
+            <p>Количество ОС: ${rep.count}</p>
+            <p>Дата: ${rep.date}</p>
+          </div>
           <div class="report-card-actions">
-            <button class="btn-icon" style="color:#10b981;" onclick="shareDirectReport(${rep.id})">Excel</button>
-            <button class="btn-icon" style="color:var(--danger);" onclick="deleteReport(${rep.id})">Удалить</button>
-          </div>`;
-        list.appendChild(card);
+            <button class="btn-icon" style="border-color: #10b981;" onclick="shareDirectReport(${rep.id})">
+              <svg style="width:18px; height:18px; fill:#10b981;" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg>
+            </button>
+            <button class="btn-icon" style="border-color: var(--danger);" onclick="deleteReport(${rep.id})">
+              <svg style="width:18px; height:18px; fill:var(--danger);" viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+            </button>
+          </div>
+        `;
+        listBlock.appendChild(card);
       });
     }
 
-    function deleteReport(id) { if (confirm("Удалить?")) { savedReports = savedReports.filter(r => r.id !== id); renderReportsList(); } }
-    
+    function deleteReport(id) {
+      if (confirm("Удалить этот фотоотчет?")) {
+        savedReports = savedReports.filter(r => r.id !== id);
+        renderReportsList();
+      }
+    }
+
     async function triggerCamera(rowIndex, type) {
       activeCameraTarget = { rowIndex, type };
-      document.getElementById('scanner-frame-wrapper').style.display = (type === 'inv') ? 'flex' : 'none';
-      document.getElementById('camera-overlay').style.display = 'flex';
+      const overlay = document.getElementById('camera-overlay');
+      const frame = document.getElementById('scanner-frame-wrapper');
+      
+      frame.style.display = (type === 'inv') ? 'flex' : 'none';
+      overlay.style.display = 'flex';
+
       try {
-        streamInstance = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment', width: 1280, height: 720 }, audio: false });
+        streamInstance = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } },
+          audio: false
+        });
         document.getElementById('video-preview').srcObject = streamInstance;
-      } catch (err) { alert("Камера недоступна. Нужен HTTPS протокол."); stopCamera(); }
+      } catch (err) {
+        alert("Камера недоступна. Открывайте по ссылке HTTPS.");
+        stopCamera();
+      }
     }
 
-    function stopCamera() { if (streamInstance) streamInstance.getTracks().forEach(t => t.stop()); document.getElementById('camera-overlay').style.display = 'none'; }
-    
+    function stopCamera() {
+      if (streamInstance) {
+        streamInstance.getTracks().forEach(t => t.stop());
+      }
+      document.getElementById('camera-overlay').style.display = 'none';
+    }
+
     function takeSnapshot() {
-      const video = document.getElementById('video-preview'); const canvas = document.getElementById('hidden-canvas'); ctx = canvas.getContext('2d');
-      canvas.width = video.videoWidth; canvas.height = video.videoHeight; ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-      
+      const video = document.getElementById('video-preview');
+      const canvas = document.getElementById('hidden-canvas');
+      const ctx = canvas.getContext('2d');
+
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+      if (activeCameraTarget.type === 'inv') {
+        const isSharp = evaluateSharpness(ctx, canvas.width, canvas.height);
+        if (!isSharp) {
+          if (!confirm("⚠️ Фотография размыта. Всё равно оставить её?")) {
+            return;
+          }
+        }
+      }
+
       const base64Img = canvas.toDataURL('image/jpeg', 0.55);
-      const target = currentRows[activeCameraTarget.rowIndex];
-      if (activeCameraTarget.type === 'inv') target.photoInv = base64Img; else target.photoGen = base64Img;
+      const targetRow = currentRows[activeCameraTarget.rowIndex];
       
-      const el = document.getElementById(p-${activeCameraTarget.type}-${activeCameraTarget.rowIndex});
-      el.style.backgroundImage = url(${base64Img}); el.classList.add('has-img'); stopCamera();
+      if (activeCameraTarget.type === 'inv') targetRow.photoInv = base64Img;
+      else targetRow.photoGen = base64Img;
+
+      const elementId = p-${activeCameraTarget.type}-${activeCameraTarget.rowIndex};
+      const element = document.getElementById(elementId);
+      element.style.backgroundImage = url(${base64Img});
+      element.classList.add('has-img');
+
+      stopCamera();
     }
 
-    function exportToExcel() { const items = currentRows.filter(r => r.invNumber || r.photoInv || r.photoGen); if (!items.length) return alert("Таблица пуста"); buildExcelAndShare(items, document.getElementById('report-type-select').value); }
-    function shareDirectReport(id) { const rep = savedReports.find(r => r.id === id); if (rep) buildExcelAndShare(rep.data.filter(r => r.invNumber || r.photoInv || r.photoGen), rep.type); }
+    function evaluateSharpness(ctx, w, h) {
+      const size = 160;
+      const x = Math.floor(w / 2 - size / 2);
+      const y = Math.floor(h / 2 - size / 2);
+      const data = ctx.getImageData(x, y, size, size).data;
+      let diff = 0;
+      for (let i = 0; i < data.length - 4; i += 4) {
+        let v1 = (data[i] + data[i+1] + data[i+2]) / 3;
+        let v2 = (data[i+4] + data[i+5] + data[i+6]) / 3;
+        diff += Math.abs(v1 - v2);
+      }
+      return (diff / (size * size)) > 9.5;
+    }
+
+    function exportToExcel() {
+      const items = currentRows.filter(r => r.invNumber || r.photoInv || r.photoGen);
+      if (items.length === 0) {
+        alert("Таблица пуста. Нечего отправлять.");
+        return;
+      }
+      const type = document.getElementById('report-type-select').value;
+      buildExcelAndShare(items, type);
+    }
+
+    function shareDirectReport(id) {
+      const rep = savedReports.find(r => r.id === id);
+      if (rep) {
+        const items = rep.data.filter(r => r.invNumber || r.photoInv || r.photoGen);
+        buildExcelAndShare(items, rep.type);
+      }
+    }
 
     async function buildExcelAndShare(validItems, typeName) {
-      const workbook = new ExcelJS.Workbook(); const worksheet = workbook.addWorksheet('Отчет ОС');
-      worksheet.columns = [{ header: '№', key: 'idx', width: 6 }, { header: 'Инвентарный номер', key: 'invNum', width: 22 }, { header: 'Фото инвентарного', key: 'imgInv', width: 32 }, { header: 'Общий вид', key: 'imgGen', width: 32 }];
-      
+      const workbook = new ExcelJS.Workbook();
+      const worksheet = workbook.addWorksheet('Отчет ОС');
+
+      worksheet.columns = [
+        { header: '№ п/п', key: 'idx', width: 8 },
+        { header: 'Инвентарный номер', key: 'invNum', width: 25 },
+        { header: 'Фото инвентарного номера', key: 'imgInv', width: 35 },
+        { header: 'Общий вид ОС', key: 'imgGen', width: 35 }
+      ];
+
+      const hRow = worksheet.getRow(1);
+      hRow.height = 28;
+      hRow.eachCell((c) => {
+        c.font = { name: 'Arial', size: 11, bold: true };
+        c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFEAEAEA' } };
+        c.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+        c.border = { top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'medium'}, right: {style:'thin'} };
+      });
+
       for (let i = 0; i < validItems.length; i++) {
-        const item = validItems[i]; const rNum = i + 2; const r = worksheet.getRow(rNum);
-        r.getCell(1).value = i + 1; r.getCell(2).value = item.invNumber || ''; r.height = 100;
-        if (item.photoInv) worksheet.addImage(workbook.addImage({ base64: item.photoInv, extension: 'jpeg' }), { tl: { col: 2.1, row: rNum - 0.9 }, ext: { width: 210, height: 120 } });
-        if (item.photoGen) worksheet.addImage(workbook.addImage({ base64: item.photoGen, extension: 'jpeg' }), { tl: { col: 3.1, row: rNum - 0.9 }, ext: { width: 210, height: 120 } });
+        const item = validItems[i];
+        const rNum = i + 2;
+        const r = worksheet.getRow(rNum);
+        
+        r.getCell(1).value = i + 1; 
+        r.getCell(2).value = item.invNumber || '';
+        r.height = 110;
+
+        r.getCell(1).alignment = { vertical: 'middle', horizontal: 'center' };
+        r.getCell(2).alignment = { vertical: 'middle', horizontal: 'center', font: { size: 12, bold: true } };
+
+        for(let col=1; col<=4; col++) {
+          r.getCell(col).border = { top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'thin'}, right: {style:'thin'} };
+        }
+
+        if (item.photoInv) {
+          const imgId = workbook.addImage({ base64: item.photoInv, extension: 'jpeg' });
+          worksheet.addImage(imgId, { tl: { col: 2.1, row: rNum - 0.9 }, ext: { width: 230, height: 130 } });
+        }
+        if (item.photoGen) {
+          const imgId = workbook.addImage({ base64: item.photoGen, extension: 'jpeg' });
+          worksheet.addImage(imgId, { tl: { col: 3.1, row: rNum - 0.9 }, ext: { width: 230, height: 130 } });
+        }
       }
-      
-      const buffer = await workbook.xlsx.writeBuffer(); const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-      const fName = ${typeName}_${new Date().toISOString().slice(0,10)}.xlsx; const file = new File([blob], fName, { type: blob.type });
-      if (navigator.canShare && navigator.canShare({ files: [file] })) { try { await navigator.share({ files: [file], title: typeName }); } catch (e) {} } 
-      else { const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = fName; link.click(); }
+
+      const buffer = await workbook.xlsx.writeBuffer();
+      const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      const fName = ${typeName}_OS_${new Date().toISOString().slice(0,10)}.xlsx;
+      const file = new File([blob], fName, { type: blob.type });
+
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        try {
+          await navigator.share({ files: [file], title: Фотоотчет: ${typeName} });
+        } catch (err) {
+          if (err.name !== "AbortError") alert("Ошибка отправки: " + err.message);
+        }
+      } else {
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = fName;
+        link.click();
+        alert("Файл скачан на устройство в папку Загрузки.");
+      }
     }
   </script>
 </body>
